@@ -81,13 +81,10 @@ class Layout extends React.PureComponent {
   render() {
     const { children, location, fullscreen } = this.props
 
-    // for screenshot tests we skip the rest
-    if (/data-dnb-test/.test(location.search)) {
-      return <Content fullscreen={true}>{children}</Content>
-    }
-
     const fs =
-      fullscreen || (location && /fullscreen/.test(location.search))
+      fullscreen ||
+      (location && /fullscreen/.test(location.search)) ||
+      /data-dnb-test/.test(location.search)
 
     return (
       <MainMenuProvider>
@@ -107,10 +104,7 @@ class Layout extends React.PureComponent {
             <Wrapper className="content-wrapper">
               {!fs && <Sidebar location={location} showAll={false} />}
 
-              <Content
-                fullscreen={fullscreen}
-                className="dnb-app-content-inner"
-              >
+              <Content fullscreen={fs} className="dnb-app-content-inner">
                 <ContentInner
                   role="main"
                   id="dnb-app-content"
