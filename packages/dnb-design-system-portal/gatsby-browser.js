@@ -88,7 +88,7 @@ export const onRouteUpdate = ({ prevLocation }) => {
       .querySelector('#gatsby-focus-wrapper')
       .removeAttribute('tabindex')
   } catch (e) {
-    console.warn(e)
+    //
   }
 
   // if previous location is not null

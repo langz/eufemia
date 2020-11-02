@@ -100,30 +100,32 @@ class Layout extends React.PureComponent {
             Skip to content
           </a>
 
-          {!fs && <StickyMenuBar />}
-          {!fs && <MainMenu enableOverlay />}
+          <ToggleSkeleton>
+            {!fs && <StickyMenuBar />}
+            {!fs && <MainMenu enableOverlay />}
 
-          <Wrapper className="content-wrapper">
-            {!fs && <Sidebar location={location} showAll={false} />}
+            <Wrapper className="content-wrapper">
+              {!fs && <Sidebar location={location} showAll={false} />}
 
-            <Content
-              fullscreen={fullscreen}
-              className="dnb-app-content-inner"
-            >
-              <ContentInner
-                role="main"
-                id="dnb-app-content"
-                className="dnb-no-focus"
-                ref={this._mainRef}
+              <Content
+                fullscreen={fullscreen}
+                className="dnb-app-content-inner"
               >
-                <GlobalStatus id="main-status" />
-                <div className="dev-grid">{children}</div>
-              </ContentInner>
-              <Footer />
-            </Content>
+                <ContentInner
+                  role="main"
+                  id="dnb-app-content"
+                  className="dnb-no-focus"
+                  ref={this._mainRef}
+                >
+                  <GlobalStatus id="main-status" />
+                  <div className="dev-grid">{children}</div>
+                </ContentInner>
+                <Footer />
+              </Content>
 
-            {fs && <ToggleGrid hidden />}
-          </Wrapper>
+              {fs && <ToggleGrid hidden />}
+            </Wrapper>
+          </ToggleSkeleton>
         </SidebarMenuProvider>
       </MainMenuProvider>
     )
@@ -263,4 +265,51 @@ const Footer = () => {
       <span />
     </FooterWrapper>
   )
+}
+
+let skeletonCount = 0
+let skeletonTimeout = null
+function ToggleSkeleton(props) {
+  const { update, skeleton } = React.useContext(Context)
+
+  const params = {
+    onMouseDown: (e) => {
+      const x = e.clientX
+      const y = e.clientY
+      if (x < 20 && y < 20) {
+        e.preventDefault()
+        e.stopPropagation()
+        skeletonCount++
+        clearTimeout(skeletonTimeout)
+        skeletonTimeout = setTimeout(() => {
+          skeletonCount = 0
+        }, 1e3)
+        if (skeletonCount >= 3) {
+          skeletonCount = 0
+          update({ skeleton: !skeleton })
+          setSkeletonEnabled(!skeleton)
+        }
+      }
+    }
+  }
+
+  return (
+    <div
+      key="skeleton"
+      className="skeleton-enabler"
+      {...params}
+      {...props}
+    />
+  )
+}
+
+export function setSkeletonEnabled(skeleton) {
+  try {
+    window.localStorage.setItem(
+      'skeleton-enabled',
+      skeleton ? true : false
+    )
+  } catch (e) {
+    //
+  }
 }

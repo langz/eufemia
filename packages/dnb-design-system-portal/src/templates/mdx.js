@@ -37,7 +37,7 @@ export default class MdxTemplate extends React.PureComponent {
     const child = children[1] || {}
 
     return (
-      <MDXProvider components={tags}>
+      <Layout location={location} fullscreen={Boolean(fullscreen)}>
         <Head>
           <title>{title || fallbackTitle}</title>
           <meta
@@ -49,17 +49,17 @@ export default class MdxTemplate extends React.PureComponent {
             }
           />
         </Head>
-        <Layout location={location} fullscreen={Boolean(fullscreen)}>
-          {showTabs && (
-            <Tabbar
-              location={location}
-              {...(child.frontmatter || {})}
-              usePath={'/' + (child.fields && child.fields.slug)}
-            />
-          )}
+        {showTabs && (
+          <Tabbar
+            location={location}
+            {...(child.frontmatter || {})}
+            usePath={'/' + (child.fields && child.fields.slug)}
+          />
+        )}
+        <MDXProvider components={tags}>
           <MDXRenderer>{body}</MDXRenderer>
-        </Layout>
-      </MDXProvider>
+        </MDXProvider>
+      </Layout>
     )
   }
 }
