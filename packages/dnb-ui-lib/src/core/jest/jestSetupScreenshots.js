@@ -76,7 +76,7 @@ module.exports.testPageScreenshot = async ({
 
   if (url) {
     await page.goto(createUrl(url, fullscreen), {
-      waitUntil: 'domcontentloaded'
+      waitUntil: 'load'
     })
   }
 
@@ -377,17 +377,17 @@ const setupBeforeAll = async ({
 
   if (url) {
     await page.goto(createUrl(url, fullscreen), {
-      waitUntil: 'domcontentloaded'
+      waitUntil: 'load' // the whole document and its resources (e.g. images, iframes, scripts) have been loaded.
     })
   }
 
   // just to make sure we get the latest version
   // Try the new Gatsby setup without this hack
-  // if (isCI) {
-  //   await page.reload({
-  //     waitUntil: 'domcontentloaded'
-  //   })
-  // }
+  if (isCI) {
+    await page.reload({
+      waitUntil: 'domcontentloaded' // the whole document (HTML) has been loaded.
+    })
+  }
 
   return page
 }
