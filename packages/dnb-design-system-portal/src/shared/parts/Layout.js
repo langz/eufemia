@@ -55,13 +55,16 @@ class Layout extends React.PureComponent {
   constructor(props) {
     super(props)
     this._mainRef = React.createRef()
+    this.state = { fullscreen: this.isFullscreen(props) }
   }
 
   componentDidMount() {
-    // gets applied on "onRouteUpdate"
-    setPageFocusElement('.dnb-app-content h1:nth-of-type(1)', 'content')
+    this.setState({ fullscreen: this.isFullscreen(this.props) }, () => {
+      // gets applied on "onRouteUpdate"
+      setPageFocusElement('.dnb-app-content h1:nth-of-type(1)', 'content')
 
-    scrollToAnimation()
+      scrollToAnimation()
+    })
   }
 
   skipToContentHandler = (event) => {
@@ -78,13 +81,41 @@ class Layout extends React.PureComponent {
     }
   }
 
-  render() {
-    const { children, location, fullscreen } = this.props
-
-    const fs =
+  isFullscreen(props) {
+    const { location, fullscreen } = props
+    return (
       fullscreen ||
-      (location && /fullscreen/.test(location.search)) ||
+      (typeof location !== 'undefined' &&
+        /fullscreen/.test(location.search))
+    )
+  }
+
+  isTest() {
+    return (
+      typeof location !== 'undefined' &&
       /data-dnb-test/.test(location.search)
+    )
+  }
+
+  render() {
+    const { children, location } = this.props
+
+    if (this.isTest()) {
+      return (
+        <Content fullscreen={true} className="dnb-app-content-inner">
+          <ContentInner
+            role="main"
+            id="dnb-app-content"
+            className="dnb-no-focus"
+            ref={this._mainRef}
+          >
+            {children}
+          </ContentInner>
+        </Content>
+      )
+    }
+
+    const fs = this.state.fullscreen || this.isFullscreen(this.props)
 
     return (
       <MainMenuProvider>
