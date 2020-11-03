@@ -75,7 +75,9 @@ module.exports.testPageScreenshot = async ({
   }
 
   if (url) {
-    await page.goto(createUrl(url, fullscreen))
+    await page.goto(createUrl(url, fullscreen), {
+      waitUntil: 'domcontentloaded'
+    })
   }
 
   await page.waitForSelector(selector)
@@ -143,7 +145,7 @@ module.exports.testPageScreenshot = async ({
     await page.$eval(
       selector,
       (node, { id, style }) => {
-        if (node.getAttribute('data-visual-test-wrapper')) {
+        if (node.getAttribute('data-visual-test-id')) {
           node.style = style
           node = node.parentNode
 
@@ -154,10 +156,10 @@ module.exports.testPageScreenshot = async ({
           const elem = document.createElement('div')
           elem.setAttribute('data-visual-test-id', id)
           elem.setAttribute('data-visual-test-wrapper', attrValue)
-          elem.style = style
 
           node.parentNode.appendChild(elem)
           elem.appendChild(node)
+          elem.style = style
 
           return elem
         }
@@ -374,20 +376,17 @@ const setupBeforeAll = async ({
   }
 
   if (url) {
-    await page.goto(createUrl(url, fullscreen))
-
-    // await page.waitForNavigation({
-    //   waitUntil: 'networkidle2'
-    // })
+    await page.goto(createUrl(url, fullscreen), {
+      waitUntil: 'domcontentloaded'
+    })
   }
 
   // just to make sure we get the latest version
   // Try the new Gatsby setup without this hack
   // if (isCI) {
-  // await page.waitFor(1e3)
-  // await page.reload({
-  //   waitUntil: 'domcontentloaded'
-  // })
+  //   await page.reload({
+  //     waitUntil: 'domcontentloaded'
+  //   })
   // }
 
   return page

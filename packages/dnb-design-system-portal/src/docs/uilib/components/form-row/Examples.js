@@ -7,7 +7,6 @@ import React from 'react'
 import ComponentBox from 'Src/shared/tags/ComponentBox'
 import { Global, css } from '@emotion/core'
 import styled from '@emotion/styled'
-// import { isCI } from 'ci-info'
 import AllComponents from 'dnb-ui-lib/src/components/form-row/AllComponents'
 
 const TestStyles = styled.div`
