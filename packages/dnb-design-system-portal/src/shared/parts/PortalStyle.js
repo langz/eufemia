@@ -10,7 +10,7 @@ export { gridStyle }
 
 // Screenshot Tests Setup
 let testWrapperStyle = ''
-if (global.IS_TEST) {
+if (global.IS_TEST || (typeof window !== 'undefined' && window.IS_TEST)) {
   testWrapperStyle = css`
     [data-visual-test-wrapper] {
       position: relative;
