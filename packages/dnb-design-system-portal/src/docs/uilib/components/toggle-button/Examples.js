@@ -12,7 +12,7 @@ class Example extends React.PureComponent {
       <React.Fragment>
         <ComponentBox
           title="Unchecked ToggleButton"
-          data-dnb-test="toggle-button-default"
+          data-visual-test="toggle-button-default"
         >
           {
             /* @jsx */ `
@@ -25,7 +25,7 @@ class Example extends React.PureComponent {
         </ComponentBox>
         <ComponentBox
           title="Checked ToggleButton"
-          data-dnb-test="toggle-button-checked"
+          data-visual-test="toggle-button-checked"
         >
           {
             /* @jsx */ `
@@ -40,7 +40,7 @@ class Example extends React.PureComponent {
         </ComponentBox>
         <ComponentBox
           title="Default ToggleButton group"
-          data-dnb-test="toggle-button-group-default"
+          data-visual-test="toggle-button-group-default"
         >
           {
             /* @jsx */ `
@@ -61,7 +61,7 @@ class Example extends React.PureComponent {
         </ComponentBox>
         <ComponentBox
           title="Multi-select ToggleButton group"
-          data-dnb-test="toggle-button-group-multiselect"
+          data-visual-test="toggle-button-group-multiselect"
         >
           {
             /* @jsx */ `
@@ -83,7 +83,7 @@ class Example extends React.PureComponent {
         </ComponentBox>
         <ComponentBox
           title="Vertical aligned ToggleButton group with `checkbox` variant and `multiselect`"
-          data-dnb-test="toggle-button-group-vertical"
+          data-visual-test="toggle-button-group-vertical"
         >
           {
             /* @jsx */ `
@@ -135,7 +135,7 @@ class Example extends React.PureComponent {
         </ComponentBox>
         <ComponentBox
           title="ToggleButton with status messages and a gorup variant as `radio`"
-          data-dnb-test="toggle-button-group-status"
+          data-visual-test="toggle-button-group-status"
         >
           {
             /* @jsx */ `
@@ -167,7 +167,7 @@ class Example extends React.PureComponent {
         </ComponentBox>
         <ComponentBox
           title="Disabled ToggleButton group"
-          data-dnb-test="toggle-button-group-disabled"
+          data-visual-test="toggle-button-group-disabled"
         >
           {
             /* @jsx */ `

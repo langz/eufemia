@@ -58,7 +58,7 @@ export function setLang(locale) {
   }
 }
 
-const isTest = () => typeof window !== 'undefined' && window.IS_TEST
+const isTest = () => global.IS_TEST
 export function getSkeletonEnabled() {
   if (isTest()) {
     return false

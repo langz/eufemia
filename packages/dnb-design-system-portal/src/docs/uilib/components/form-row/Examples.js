@@ -32,7 +32,7 @@ const WidthLimit = styled.div`
 
 export const FormRowVerticalAlignedLabels = () => (
   <TestStyles>
-    <ComponentBox data-dnb-test="form-row-vertical-label">
+    <ComponentBox data-visual-test="form-row-vertical-label">
       {
         /* @jsx */ `
 <FormRow
@@ -54,7 +54,7 @@ export const FormRowVerticalAlignedLabels = () => (
 
 export const FormRowLegendIndentUsage = () => (
   <TestStyles>
-    <ComponentBox data-dnb-test="form-row-default">
+    <ComponentBox data-visual-test="form-row-default">
       {
         /* @jsx */ `
 <FormRow indent="default" label="A long horizontal legend (FormLabel) with a lot of informative text and a default indent:">
@@ -87,7 +87,7 @@ export const FormRowSectionStyle = () => (
 
 export const FormRowCombineVerticalAndHorizontal = () => (
   <TestStyles>
-    <ComponentBox data-dnb-test="form-row-combined" useRender>
+    <ComponentBox data-visual-test="form-row-combined" useRender>
       {
         /* @jsx */ `
 // 1. In the nested FormRow we reset the layout to not be vertical
@@ -160,7 +160,7 @@ export const FormRowDefault = () => (
 
 export const FormRowVertical = () => (
   <TestStyles>
-    <ComponentBox data-dnb-test="form-row-vertical">
+    <ComponentBox data-visual-test="form-row-vertical">
       {
         /* @jsx */ `
 <FormRow direction="vertical" label="Label legend for the inputs:">
@@ -175,7 +175,10 @@ export const FormRowVertical = () => (
 
 export const FormRowVerticalDirection = () => (
   <TestStyles>
-    <ComponentBox data-dnb-test="form-row-vertical-label-button" useRender>
+    <ComponentBox
+      data-visual-test="form-row-vertical-label-button"
+      useRender
+    >
       {
         /* @jsx */ `
 const CustomRow = styled(FormRow)\`
@@ -201,7 +204,7 @@ render(
 
 export const FormRowNoWrap = () => (
   <TestStyles>
-    <ComponentBox data-dnb-test="form-row-horizontal-no_wrap">
+    <ComponentBox data-visual-test="form-row-horizontal-no_wrap">
       {
         /* @jsx */ `
 <FormRow
@@ -221,7 +224,7 @@ export const FormRowNoWrap = () => (
 
 export const FormRowWrap = () => (
   <TestStyles>
-    <ComponentBox data-dnb-test="form-row-horizontal-wrap">
+    <ComponentBox data-visual-test="form-row-horizontal-wrap">
       {
         /* @jsx */ `
 <FormRow
@@ -243,7 +246,7 @@ export const FormRowWrap = () => (
 
 export const FormRowLegendUsage = () => (
   <TestStyles>
-    <ComponentBox data-dnb-test="form-row-legend">
+    <ComponentBox data-visual-test="form-row-legend">
       {
         /* @jsx */ `
 <FormSet label_direction="vertical">
@@ -322,7 +325,7 @@ render(
 
 export default class FormRowVisualTests extends React.PureComponent {
   render() {
-    if (typeof window === 'undefined' || !window.IS_TEST) {
+    if (!global.IS_TEST) {
       return null
     }
     return (
@@ -332,7 +335,7 @@ export default class FormRowVisualTests extends React.PureComponent {
             #___gatsby {
               display: flex;
             }
-            .dnb-app-content-inner {
+            .dnb-app-content {
               overflow: visible;
             }
           `}
@@ -340,7 +343,7 @@ export default class FormRowVisualTests extends React.PureComponent {
         <ComponentBox
           title="Horizontal direction"
           scope={{ AllComponents }}
-          data-dnb-test="form-row-all-horizontal-direction"
+          data-visual-test="form-row-all-horizontal-direction"
         >
           {
             /* @jsx */ `
@@ -358,7 +361,7 @@ export default class FormRowVisualTests extends React.PureComponent {
         <ComponentBox
           title="Vertical direction"
           scope={{ AllComponents, WidthLimit }}
-          data-dnb-test="form-row-all-vertical-direction"
+          data-visual-test="form-row-all-vertical-direction"
         >
           {
             /* @jsx */ `
@@ -373,7 +376,7 @@ export default class FormRowVisualTests extends React.PureComponent {
         <ComponentBox
           title="Vertical everything"
           scope={{ AllComponents, WidthLimit }}
-          data-dnb-test="form-row-all-vertical-everything"
+          data-visual-test="form-row-all-vertical-everything"
         >
           {
             /* @jsx */ `
@@ -388,7 +391,7 @@ export default class FormRowVisualTests extends React.PureComponent {
         <ComponentBox
           title="Vertical label direction"
           scope={{ AllComponents }}
-          data-dnb-test="form-row-all-vertical-label-direction"
+          data-visual-test="form-row-all-vertical-label-direction"
         >
           {
             /* @jsx */ `
@@ -401,7 +404,7 @@ export default class FormRowVisualTests extends React.PureComponent {
         <ComponentBox
           title="Vertical label direction, no labels"
           scope={{ AllComponents }}
-          data-dnb-test="form-row-all-vertical-label-direction-no-label"
+          data-visual-test="form-row-all-vertical-label-direction-no-label"
         >
           {
             /* @jsx */ `
@@ -413,7 +416,7 @@ export default class FormRowVisualTests extends React.PureComponent {
         </ComponentBox>
         <ComponentBox
           title="Horizontal centered"
-          data-dnb-test="form-row-centered"
+          data-visual-test="form-row-centered"
         >
           {
             /* @jsx */ `

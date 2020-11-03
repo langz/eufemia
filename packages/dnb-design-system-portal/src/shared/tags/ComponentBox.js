@@ -12,7 +12,7 @@ import { getFragments } from 'dnb-ui-lib/src/fragments/lib'
 import { getElements } from 'dnb-ui-lib/src/elements/lib'
 
 const ComponentBox = ({ children, hideOnTest, scope = {}, ...rest }) => {
-  if (hideOnTest && typeof window !== 'undefined' && window.IS_TEST) {
+  if (hideOnTest && global.IS_TEST) {
     return <></>
   }
   return (
@@ -50,9 +50,9 @@ ComponentBox.defaultProps = {
 export default ComponentBox
 
 export const TestWrapper = ({ children, ...props }) => {
-  document.documentElement.setAttribute('data-dnb-test', true)
+  document.documentElement.setAttribute('data-visual-test', true)
   return (
-    <div data-dnb-test-wrapper {...props}>
+    <div data-visual-test-wrapper {...props}>
       {children}
     </div>
   )

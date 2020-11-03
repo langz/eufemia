@@ -55,16 +55,14 @@ class Layout extends React.PureComponent {
   constructor(props) {
     super(props)
     this._mainRef = React.createRef()
-    this.state = { fullscreen: this.isFullscreen(props) }
+    this.state = { fullscreen: props.fullscreen }
   }
 
   componentDidMount() {
-    this.setState({ fullscreen: this.isFullscreen(this.props) }, () => {
-      // gets applied on "onRouteUpdate"
-      setPageFocusElement('.dnb-app-content h1:nth-of-type(1)', 'content')
+    // gets applied on "onRouteUpdate"
+    setPageFocusElement('.dnb-app-content h1:nth-of-type(1)', 'content')
 
-      scrollToAnimation()
-    })
+    scrollToAnimation()
   }
 
   skipToContentHandler = (event) => {
@@ -81,8 +79,8 @@ class Layout extends React.PureComponent {
     }
   }
 
-  isFullscreen(props) {
-    const { location, fullscreen } = props
+  isFullscreen() {
+    const { location, fullscreen } = this.props
     return (
       fullscreen ||
       (typeof location !== 'undefined' &&
@@ -90,32 +88,10 @@ class Layout extends React.PureComponent {
     )
   }
 
-  isTest() {
-    return (
-      typeof location !== 'undefined' &&
-      /data-dnb-test/.test(location.search)
-    )
-  }
-
   render() {
     const { children, location } = this.props
 
-    if (this.isTest()) {
-      return (
-        <Content fullscreen={true} className="dnb-app-content-inner">
-          <ContentInner
-            role="main"
-            id="dnb-app-content"
-            className="dnb-no-focus"
-            ref={this._mainRef}
-          >
-            {children}
-          </ContentInner>
-        </Content>
-      )
-    }
-
-    const fs = this.state.fullscreen || this.isFullscreen(this.props)
+    const fs = this.state.fullscreen || this.isFullscreen()
 
     return (
       <MainMenuProvider>
@@ -135,16 +111,11 @@ class Layout extends React.PureComponent {
             <Wrapper className="content-wrapper">
               {!fs && <Sidebar location={location} showAll={false} />}
 
-              <Content fullscreen={fs} className="dnb-app-content-inner">
-                <ContentInner
-                  role="main"
-                  id="dnb-app-content"
-                  className="dnb-no-focus"
-                  ref={this._mainRef}
-                >
+              <Content fullscreen={fs}>
+                <MainContent ref={this._mainRef}>
                   <GlobalStatus id="main-status" />
                   <div className="dev-grid">{children}</div>
-                </ContentInner>
+                </MainContent>
                 <Footer />
               </Content>
 
@@ -174,7 +145,6 @@ const Wrapper = styled.div`
 const Content = ({ className, fullscreen, children }) => (
   <ContentWrapper
     className={classnames(
-      'dnb-spacing',
       'dnb-app-content',
       fullscreen && 'fullscreen-page',
       className
@@ -208,7 +178,7 @@ const ContentWrapper = styled.div`
   height of StickyMenuBar - 1px border */
   padding-top: 4rem;
 
-  .dnb-app-content-inner {
+  .dnb-app-content {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -232,9 +202,9 @@ const ContentWrapper = styled.div`
     border: none;
   }
 
-  /* for whider screens */
+  /* for wider screens */
   &:not(.fullscreen-page) {
-    .dnb-app-content-inner > div:first-of-type {
+    .dnb-app-content > div:first-of-type {
       @media screen and (min-width: 70em) {
         max-width: 70rem;
       }
@@ -242,7 +212,17 @@ const ContentWrapper = styled.div`
   }
 `
 
-const ContentInner = styled.main`
+const MainContent = React.forwardRef((props, ref) => (
+  <StyledMain
+    ref={ref}
+    role="main"
+    id="dnb-app-content"
+    className="dnb-no-focus dnb-spacing"
+    {...props}
+  />
+))
+
+const StyledMain = styled.main`
   width: 100%;
   min-height: 85vh;
   padding: 0 2rem;
@@ -250,7 +230,7 @@ const ContentInner = styled.main`
 
 const FooterWrapper = styled.footer`
   position: relative;
-  z-index: 2; /* 1 heigher than aside */
+  z-index: 2; /* 1 higher than aside */
 
   display: flex;
   align-items: center;

@@ -11,7 +11,7 @@ class Example extends React.PureComponent {
     return (
       <React.Fragment>
         <UseOnTests />
-        <ComponentBox title="Radio group" data-dnb-test="radio-group">
+        <ComponentBox title="Radio group" data-visual-test="radio-group">
           {
             /* @jsx */ `
 <Radio.Group
@@ -31,7 +31,7 @@ class Example extends React.PureComponent {
         </ComponentBox>
         <ComponentBox
           title="Vertical aligned Radio group"
-          data-dnb-test="radio-group-vertical"
+          data-visual-test="radio-group-vertical"
         >
           {
             /* @jsx */ `
@@ -53,7 +53,7 @@ class Example extends React.PureComponent {
         </ComponentBox>
         <ComponentBox
           title="Radio group with status messages"
-          data-dnb-test="radio-group-status"
+          data-visual-test="radio-group-status"
         >
           {
             /* @jsx */ `
@@ -85,7 +85,7 @@ class Example extends React.PureComponent {
         </ComponentBox>
         <ComponentBox
           title="Plain Radio group without `<Radio.Group>`. It is recomended to use the `<Radio.Group>` if You are using **React**."
-          data-dnb-test="radio-group-plain"
+          data-visual-test="radio-group-plain"
         >
           {
             /* @jsx */ `
@@ -123,7 +123,7 @@ class Example extends React.PureComponent {
         <ComponentBox
           title="With different sizes"
           desciption="As for now, there are two sizes. `medium` is the default size."
-          data-dnb-test="radio-sizes"
+          data-visual-test="radio-sizes"
         >
           {
             /* @jsx */ `
@@ -134,7 +134,7 @@ class Example extends React.PureComponent {
         </ComponentBox>
         <ComponentBox
           title="Disabled Radio group with `label_position` set to left"
-          data-dnb-test="radio-group-disabled"
+          data-visual-test="radio-group-disabled"
         >
           {
             /* @jsx */ `
@@ -186,11 +186,11 @@ class Example extends React.PureComponent {
 
 class UseOnTests extends React.PureComponent {
   render() {
-    return typeof window !== 'undefined' && window.IS_TEST ? (
+    return global.IS_TEST ? (
       <>
         <ComponentBox
           title="Unchecked Radio (Single Radio buttons should not be used)"
-          data-dnb-test="radio-default"
+          data-visual-test="radio-default"
         >
           {
             /* @jsx */ `
@@ -202,7 +202,7 @@ class UseOnTests extends React.PureComponent {
         </ComponentBox>
         <ComponentBox
           title="Checked Radio (Single Radio buttons should not be used)"
-          data-dnb-test="radio-checked"
+          data-visual-test="radio-checked"
         >
           {
             /* @jsx */ `

@@ -19,43 +19,43 @@ describe('HelperClasses screenshot', () => {
   })
   it('have to match core-style', async () => {
     const screenshot = await testPageScreenshot({
-      selector: '[data-dnb-test="helper-core-style"]'
+      selector: '[data-visual-test="helper-core-style"]'
     })
     expect(screenshot).toMatchImageSnapshot()
   })
   it('have to match tap-focus', async () => {
     const screenshot = await testPageScreenshot({
-      selector: '[data-dnb-test="helper-tap-focus"]'
+      selector: '[data-visual-test="helper-tap-focus"]'
     })
     expect(screenshot).toMatchImageSnapshot()
   })
   it('have to match unstyled-list', async () => {
     const screenshot = await testPageScreenshot({
-      selector: '[data-dnb-test="helper-unstyled-list"]'
+      selector: '[data-visual-test="helper-unstyled-list"]'
     })
     expect(screenshot).toMatchImageSnapshot()
   })
   it('have to match hide-on-mobile', async () => {
     const screenshot = await testPageScreenshot({
-      selector: '[data-dnb-test="helper-hide-on-mobile"]'
+      selector: '[data-visual-test="helper-hide-on-mobile"]'
     })
     expect(screenshot).toMatchImageSnapshot()
   })
   it('have to match mobile-exclusive', async () => {
     const screenshot = await testPageScreenshot({
-      selector: '[data-dnb-test="helper-mobile-exclusive"]'
+      selector: '[data-visual-test="helper-mobile-exclusive"]'
     })
     expect(screenshot).toMatchImageSnapshot()
   })
   it('have to match width-limit', async () => {
     const screenshot = await testPageScreenshot({
-      selector: '[data-dnb-test="helper-width-limit"]'
+      selector: '[data-visual-test="helper-width-limit"]'
     })
     expect(screenshot).toMatchImageSnapshot()
   })
   it('have to match belt', async () => {
     const screenshot = await testPageScreenshot({
-      selector: '[data-dnb-test="helper-belt"]'
+      selector: '[data-visual-test="helper-belt"]'
     })
     expect(screenshot).toMatchImageSnapshot()
   })
@@ -65,7 +65,7 @@ describe('HelperClasses screenshot', () => {
         style: {
           width: '60rem'
         },
-        selector: '[data-dnb-test="helper-nudge"]'
+        selector: '[data-visual-test="helper-nudge"]'
       })
       expect(screenshot).toMatchImageSnapshot()
     })
@@ -74,20 +74,20 @@ describe('HelperClasses screenshot', () => {
         style: {
           width: '20rem'
         },
-        selector: '[data-dnb-test="helper-nudge"]'
+        selector: '[data-visual-test="helper-nudge"]'
       })
       expect(screenshot).toMatchImageSnapshot()
     })
   }
   it('have to match sr-only', async () => {
     const screenshot = await testPageScreenshot({
-      selector: '[data-dnb-test="helper-sr-only"]'
+      selector: '[data-visual-test="helper-sr-only"]'
     })
     expect(screenshot).toMatchImageSnapshot()
   })
   it('have to match not-sr-only', async () => {
     const screenshot = await testPageScreenshot({
-      selector: '[data-dnb-test="helper-not-sr-only"]'
+      selector: '[data-visual-test="helper-not-sr-only"]'
     })
     expect(screenshot).toMatchImageSnapshot()
   })

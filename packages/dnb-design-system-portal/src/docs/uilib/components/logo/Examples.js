@@ -12,28 +12,34 @@ class Example extends React.PureComponent {
       <>
         <ComponentBox
           title="DNB Logo with dynamic height"
-          data-dnb-test="logo-auto-size"
+          data-visual-test="logo-auto-size"
         >
-          {/* @jsx */ `
+          {
+            /* @jsx */ `
 <span style={{fontSize: '12rem'}}>
   <Logo size="auto" />
 </span>
-          `}
+          `
+          }
         </ComponentBox>
         <ComponentBox
           title="DNB Logo with dynamic height"
-          data-dnb-test="logo-inherit-size"
+          data-visual-test="logo-inherit-size"
         >
-          {/* @jsx */ `
+          {
+            /* @jsx */ `
 <span style={{height: '12rem'}}>
   <Logo size="inherit" />
 </span>
-          `}
+          `
+          }
         </ComponentBox>
         <ComponentBox title="DNB Logo with fixed height">
-          {/* @jsx */ `
-<Logo height="192" data-dnb-test="logo-default" />
-        `}
+          {
+            /* @jsx */ `
+<Logo height="192" data-visual-test="logo-default" />
+        `
+          }
         </ComponentBox>
       </>
     )

@@ -53,29 +53,30 @@ function loadProdStyles() {
   }
 }
 
-// enable prefetching
-export const disableCorePrefetching = () => false
-
-// scroll to top on route change
-export const shouldUpdateScroll = () => true
-
 if (
   typeof window !== 'undefined' &&
-  window.location.search.split(/\?|&/).includes('data-dnb-test')
+  window.location &&
+  window.location.href.includes('data-visual-test')
 ) {
-  window.IS_TEST = true
+  global.IS_TEST = true
+  if (typeof window !== 'undefined') {
+    window.IS_TEST = true
+  }
 }
-
 export const onPreRouteUpdate = ({ location }) => {
-  if (
-    location &&
-    location.search.split(/\?|&/).includes('data-dnb-test')
-  ) {
+  if (location && location.href.includes('data-visual-test')) {
+    global.IS_TEST = true
     if (typeof window !== 'undefined') {
       window.IS_TEST = true
     }
   }
 }
+
+// enable prefetching
+export const disableCorePrefetching = () => !global.IS_TEST
+
+// scroll to top on route change
+export const shouldUpdateScroll = () => true
 
 export const onRouteUpdate = ({ prevLocation }) => {
   resetLevels(1)
@@ -84,9 +85,11 @@ export const onRouteUpdate = ({ prevLocation }) => {
     // we have to disable the focus management from Reach Router
     // More info: why we have to have the tabindex https://reach.tech/router/accessibility
     // More info: The div is necessary to manage focus https://github.com/reach/router/issues/63#issuecomment-395988602
-    document
-      .querySelector('#gatsby-focus-wrapper')
-      .removeAttribute('tabindex')
+    if (!global.IS_TEST) {
+      document
+        .querySelector('#gatsby-focus-wrapper')
+        .removeAttribute('tabindex')
+    }
   } catch (e) {
     //
   }

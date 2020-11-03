@@ -20,7 +20,7 @@ const config = {
   testScreenshotOnHost: 'localhost',
   testScreenshotOnPort: 8000,
   headless: true,
-  timeout: 300e3,
+  timeout: 30e3,
   blockFontRequest: false,
   allowedFonts: [], // e.g. 'LiberationMono'
   pixelGrid: 8,
@@ -50,7 +50,7 @@ module.exports.isCI = isCI
 
 module.exports.testPageScreenshot = async ({
   url = null,
-  fullscreen = true,
+  fullscreen = false,
   page = global.__PAGE__,
   selector,
   style = null,
@@ -58,8 +58,8 @@ module.exports.testPageScreenshot = async ({
   text = null,
   simulate = null,
   waitBeforeFinish = null,
-  waitAfterSimulate = null,
   waitBeforeSimulate = null,
+  waitAfterSimulate = null,
   waitAfterSimulateSelector = null,
   secreenshotSelector = null,
   styleSelector = null,
@@ -102,9 +102,9 @@ module.exports.testPageScreenshot = async ({
     let screenshotElement = element
 
     // now we wrap the element and apply a padding to it
-    // the reason is because on some styles we have a shadow arround,
+    // the reason is because on some styles we have a shadow around,
     // and we want to have this also in the screenshot
-    // With the wrapper, we center the are we take a screnshot
+    // With the wrapper, we center the are we take a screenshot
     let wrapperId
     if (addWrapper) {
       wrapperId = makeUniqueId()
@@ -143,19 +143,19 @@ module.exports.testPageScreenshot = async ({
         ...(wrapperStyle ? wrapperStyle : {})
       })
 
-      // wrapp the element/selector and give the wrapper also a style
+      // wrap the element/selector and give the wrapper also a style
       await page.$eval(
         selector,
         (node, { id, style }) => {
-          const attrValue = node.getAttribute('data-dnb-test')
+          const attrValue = node.getAttribute('data-visual-test')
           const elem = document.createElement('div')
 
-          // NB: The styles for [data-dnb-test-wrapper] have to be set in the CSS main file
-          // elem.classList.add('is-test')
-          elem.setAttribute('data-dnb-test-id', id)
-          elem.setAttribute('data-dnb-test-wrapper', attrValue)
+          elem.setAttribute('data-visual-test-id', id)
+          elem.setAttribute('data-visual-test-wrapper', attrValue)
           elem.style = style
+
           node.parentNode.appendChild(elem)
+
           return elem.appendChild(node)
         },
         {
@@ -164,8 +164,10 @@ module.exports.testPageScreenshot = async ({
         }
       )
 
-      await page.waitForSelector(`[data-dnb-test-id="${wrapperId}"]`)
-      screenshotElement = await page.$(`[data-dnb-test-id="${wrapperId}"]`)
+      await page.waitForSelector(`[data-visual-test-id="${wrapperId}"]`)
+      screenshotElement = await page.$(
+        `[data-visual-test-id="${wrapperId}"]`
+      )
     }
 
     if (text) {
@@ -287,8 +289,9 @@ module.exports.testPageScreenshot = async ({
 
     // revert the wrapper attribute
     if (wrapperId) {
-      await page.$eval(`[data-dnb-test-id="${wrapperId}"]`, (node) => {
-        node.removeAttribute('data-dnb-test-wrapper')
+      await page.$eval(`[data-visual-test-id="${wrapperId}"]`, (node) => {
+        node.removeAttribute('data-visual-test-id')
+        node.removeAttribute('data-visual-test-wrapper')
         return node
       })
     }
@@ -311,7 +314,7 @@ module.exports.testPageScreenshot = async ({
 
 const setupPageScreenshot = ({
   url,
-  fullscreen = true,
+  fullscreen = false,
   pageViewport = null,
   screenshotConfig = null,
   timeout = null
@@ -336,7 +339,7 @@ module.exports.setupPageScreenshot = setupPageScreenshot
 
 const setupBeforeAll = async ({
   url,
-  fullscreen = true,
+  fullscreen = false,
   pageViewport = null
 }) => {
   const page = await global.__BROWSER__.newPage()
@@ -382,7 +385,7 @@ const setupBeforeAll = async ({
     await page.goto(createUrl(url, fullscreen))
 
     // await page.waitForNavigation({
-    //   waitUntil: 'domcontentloaded'
+    //   waitUntil: 'networkidle2'
     // })
   }
 
@@ -403,13 +406,18 @@ module.exports.loadImage = async (imagePath) =>
   await fs.readFile(path.resolve(imagePath))
 
 // make sure "${url}/" has actually a slash on the end
-const createUrl = (url, fullscreen = true) =>
-  `http://${config.testScreenshotOnHost}:${
+const createUrl = (url, fullscreen = false) => {
+  const path = `http://${config.testScreenshotOnHost}:${
     config.testScreenshotOnPort
-  }/${url}/?data-dnb-test${fullscreen ? '&fullscreen' : ''}`.replace(
+  }/${url}?data-visual-test${fullscreen ? '&fullscreen' : ''}`.replace(
     /\/\//g,
     '/'
   )
+
+  // console.log('data-visual-test:', path)
+
+  return path
+}
 
 const makeStyles = (style) =>
   Object.entries(style)
