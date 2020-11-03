@@ -94,36 +94,42 @@ class Layout extends React.PureComponent {
     const fs = this.state.fullscreen || this.isFullscreen()
 
     return (
-      <MainMenuProvider>
-        <SidebarMenuProvider>
-          <a
-            className="dnb-skip-link"
-            href="#dnb-app-content"
-            onClick={this.skipToContentHandler}
-          >
-            Skip to content
-          </a>
+      <>
+        <a
+          className="dnb-skip-link"
+          href="#dnb-app-content"
+          onClick={this.skipToContentHandler}
+        >
+          Skip to content
+        </a>
 
-          <ToggleSkeleton>
-            {!fs && <StickyMenuBar />}
-            {!fs && <MainMenu enableOverlay />}
+        <MainMenuProvider>
+          <SidebarMenuProvider>
+            <ToggleSkeleton>
+              {!fs && <StickyMenuBar />}
+              {!fs && <MainMenu enableOverlay />}
 
-            <Wrapper className="content-wrapper">
-              {!fs && <Sidebar location={location} showAll={false} />}
+              <Wrapper className="content-wrapper">
+                {!fs && <Sidebar location={location} showAll={false} />}
 
-              <Content fullscreen={fs}>
-                <MainContent ref={this._mainRef}>
-                  <GlobalStatus id="main-status" />
-                  <div className="dev-grid">{children}</div>
-                </MainContent>
-                <Footer />
-              </Content>
+                <Content key="content" fullscreen={fs}>
+                  <MainContent key="main" ref={this._mainRef}>
+                    <GlobalStatus id="main-status" />
 
-              {fs && <ToggleGrid hidden />}
-            </Wrapper>
-          </ToggleSkeleton>
-        </SidebarMenuProvider>
-      </MainMenuProvider>
+                    <div key="grid" className="dev-grid">
+                      {children}
+                    </div>
+                  </MainContent>
+
+                  <Footer />
+                </Content>
+
+                {fs && <ToggleGrid hidden />}
+              </Wrapper>
+            </ToggleSkeleton>
+          </SidebarMenuProvider>
+        </MainMenuProvider>
+      </>
     )
   }
 }

@@ -20,7 +20,7 @@ const config = {
   testScreenshotOnHost: 'localhost',
   testScreenshotOnPort: 8000,
   headless: true,
-  timeout: 30e3,
+  timeout: 5e3,
   blockFontRequest: false,
   allowedFonts: [], // e.g. 'LiberationMono'
   pixelGrid: 8,
@@ -65,251 +65,243 @@ module.exports.testPageScreenshot = async ({
   styleSelector = null,
   simulateSelector = null,
   wrapperStyle = null,
-  measureElement = null,
-  transformElement = null
+  measureElement = null
 } = {}) => {
-  try {
-    if (!page) {
-      const pages = await global.__BROWSER__.pages()
-      if (pages[0]) {
-        page = pages[0]
+  if (!page) {
+    const pages = await global.__BROWSER__.pages()
+    if (pages[0]) {
+      page = pages[0]
+    }
+  }
+
+  if (url) {
+    await page.goto(createUrl(url, fullscreen))
+  }
+
+  await page.waitForSelector(selector)
+
+  await page.mouse.move(0, 0)
+
+  if (style) {
+    await page.$eval(
+      styleSelector || selector,
+      (node, style) => {
+        node.setAttribute('style', style)
+        return node
+      },
+      makeStyles(style)
+    )
+  }
+
+  const element = await page.$(selector)
+
+  let screenshotElement = element
+
+  // now we wrap the element and apply a padding to it
+  // the reason is because on some styles we have a shadow around,
+  // and we want to have this also in the screenshot
+  // With the wrapper, we center the are we take a screenshot
+  let wrapperId
+  if (addWrapper) {
+    wrapperId = makeUniqueId()
+
+    // because of getComputedStyle we have to use evaluate
+    const background = await page.evaluate(
+      ({ selector }) => {
+        let node = document.querySelector(selector)
+        if (!(node && node.parentNode)) {
+          return null
+        }
+        node = node.parentNode
+
+        const backgroundColor = window
+          .getComputedStyle(node)
+          .getPropertyValue('background-color')
+
+        // if transparent, do nothing
+        if (backgroundColor === 'rgba(0, 0, 0, 0)') {
+          return null
+        }
+        return backgroundColor
+      },
+      {
+        selector
       }
-    }
+    )
 
-    if (url) {
-      await page.goto(createUrl(url, fullscreen))
+    // get the height we want to have on the wrapper
+    const { height } = await element.boundingBox()
 
-      // await page.waitForNavigation({
-      //   waitUntil: 'domcontentloaded'
-      // })
-    }
+    // build the styles
+    const style = makeStyles({
+      background,
+      height: `${height + 32}px`, // because we use "inline-block" - we have to make the height absolute
+      ...(wrapperStyle ? wrapperStyle : {})
+    })
 
-    await page.waitForSelector(selector)
-
-    if (style) {
-      await page.$eval(
-        styleSelector || selector,
-        (node, style) => node.setAttribute('style', style),
-        makeStyles(style)
-      )
-    }
-
-    if (transformElement) {
-      await transformElement(element)
-    }
-
-    const element = await page.$(selector)
-    let screenshotElement = element
-
-    // now we wrap the element and apply a padding to it
-    // the reason is because on some styles we have a shadow around,
-    // and we want to have this also in the screenshot
-    // With the wrapper, we center the are we take a screenshot
-    let wrapperId
-    if (addWrapper) {
-      wrapperId = makeUniqueId()
-
-      // because of getComputedStyle we have to use evaluate
-      const background = await page.evaluate(
-        ({ selector }) => {
-          let node = document.querySelector(selector)
-          if (!(node && node.parentNode)) {
-            return null
-          }
+    // wrap the element/selector and give the wrapper also a style
+    await page.$eval(
+      selector,
+      (node, { id, style }) => {
+        if (node.getAttribute('data-visual-test-wrapper')) {
+          node.style = style
           node = node.parentNode
 
-          const backgroundColor = window
-            .getComputedStyle(node)
-            .getPropertyValue('background-color')
-
-          // if transparent, do nothing
-          if (backgroundColor === 'rgba(0, 0, 0, 0)') {
-            return null
-          }
-          return backgroundColor
-        },
-        {
-          selector
-        }
-      )
-
-      // get the height we want to have on the wrapper
-      const { height } = await element.boundingBox()
-
-      // build the styles
-      const style = makeStyles({
-        background,
-        height: `${height + 32}px`, // because we use "inline-block" - we have to make the height absolute
-        ...(wrapperStyle ? wrapperStyle : {})
-      })
-
-      // wrap the element/selector and give the wrapper also a style
-      await page.$eval(
-        selector,
-        (node, { id, style }) => {
+          return node
+        } else {
           const attrValue = node.getAttribute('data-visual-test')
-          const elem = document.createElement('div')
 
+          const elem = document.createElement('div')
           elem.setAttribute('data-visual-test-id', id)
           elem.setAttribute('data-visual-test-wrapper', attrValue)
           elem.style = style
 
           node.parentNode.appendChild(elem)
+          elem.appendChild(node)
 
-          return elem.appendChild(node)
-        },
-        {
-          id: wrapperId,
-          style
+          return elem
         }
-      )
-
-      await page.waitForSelector(`[data-visual-test-id="${wrapperId}"]`)
-      screenshotElement = await page.$(
-        `[data-visual-test-id="${wrapperId}"]`
-      )
-    }
-
-    if (text) {
-      await page.$eval(
-        selector,
-        (node, { text }) => (node.innerText = text),
-        { text }
-      )
-    }
-
-    if (parseFloat(waitBeforeSimulate) > 0) {
-      await page.waitFor(waitBeforeSimulate)
-    }
-
-    let elementToSimulate = null
-    if (simulate) {
-      if (simulateSelector) {
-        await page.waitForSelector(simulateSelector)
-        elementToSimulate = await page.$(simulateSelector)
-      } else {
-        elementToSimulate = element
+      },
+      {
+        id: wrapperId,
+        style
       }
+    )
 
-      switch (simulate) {
-        case 'hover': {
-          await elementToSimulate.hover()
-          await elementToSimulate.dispose()
-          break
-        }
-
-        case 'click': {
-          await elementToSimulate.click()
-          break
-        }
-
-        case 'focusclick': {
-          await elementToSimulate.focus()
-          await elementToSimulate.click()
-          break
-        }
-
-        case 'active': {
-          // make a delayed click, no await. Else we get only a release state
-          waitBeforeFinish = 500 // have mouse pressed until screen shot is taken
-          elementToSimulate.click({
-            delay: waitBeforeFinish // move the mouse
-          })
-          break
-        }
-
-        case 'focus': {
-          await screenshotElement.press('Tab') // to simulate pressing tab key before focus
-          await elementToSimulate.focus()
-          break
-        }
-
-        default:
-      }
-    }
-
-    // wait before taking screenshot
-    if (waitAfterSimulateSelector) {
-      await page.waitForSelector(waitAfterSimulateSelector, {
-        visible: true
-      })
-    }
-    if (parseFloat(waitAfterSimulate) > 0) {
-      await page.waitFor(waitAfterSimulate)
-    }
-
-    if (secreenshotSelector) {
-      await page.waitForSelector(secreenshotSelector, { visible: true })
-      screenshotElement = await page.$(secreenshotSelector)
-    }
-
-    // with this, we get a warning (console)
-    // if an element is not in the pixel grid
-    if (!measureElement) {
-      measureElement = secreenshotSelector || selector
-    }
-    if (!isCI && measureElement) {
-      const pixelGrid = config.pixelGrid
-      if (selector !== measureElement) {
-        await page.waitForSelector(measureElement)
-      }
-      const heightInPixels = await page.evaluate(
-        ({ measureElement }) => {
-          const node = document.querySelector(measureElement)
-          return window.getComputedStyle(node).getPropertyValue('height')
-        },
-        {
-          measureElement
-        }
-      )
-      const heightInPixelsFloat = parseFloat(heightInPixels)
-      const isInEightSeries = (num) => num % pixelGrid
-      const howManyPixeToNextEight = (num) => {
-        const v = isInEightSeries(num)
-        return v === 0 ? v : pixelGrid - v
-      }
-      const off = howManyPixeToNextEight(heightInPixelsFloat)
-      if (off > 0) {
-        const inRem = Math.round(heightInPixelsFloat / (pixelGrid * 2))
-        log.warn(
-          `"${measureElement}" is <${off}px off to ${
-            heightInPixelsFloat + off
-          }rem (${heightInPixels}) which corresponds to a rem value of ${inRem}rem.`
-        )
-      }
-    }
-
-    const screenshot = await screenshotElement.screenshot()
-    screenshotElement = null
-
-    if (elementToSimulate) {
-      await elementToSimulate.dispose()
-      elementToSimulate = null
-    }
-
-    // revert the wrapper attribute
-    if (wrapperId) {
-      await page.$eval(`[data-visual-test-id="${wrapperId}"]`, (node) => {
-        node.removeAttribute('data-visual-test-id')
-        node.removeAttribute('data-visual-test-wrapper')
-        return node
-      })
-    }
-
-    if (config.headless !== true) {
-      waitBeforeFinish = config.timeout
-    }
-
-    // before we had: just to make sure we dont resolve, before the delayed click happened
-    // so the next interation on the same url will have a reset state
-    if (waitBeforeFinish > 0) {
-      await page.waitFor(waitBeforeFinish)
-    }
-
-    return screenshot
-  } catch (e) {
-    throw new Error(e)
+    await page.waitForSelector(`[data-visual-test-id="${wrapperId}"]`)
+    screenshotElement = await page.$(
+      `[data-visual-test-id="${wrapperId}"]`
+    )
   }
+
+  if (text) {
+    await page.$eval(
+      selector,
+      (node, { text }) => (node.innerText = text),
+      { text }
+    )
+  }
+
+  if (parseFloat(waitBeforeSimulate) > 0) {
+    await page.waitFor(waitBeforeSimulate)
+  }
+
+  let elementToSimulate = null
+  if (simulate) {
+    if (simulateSelector) {
+      await page.waitForSelector(simulateSelector)
+      elementToSimulate = await page.$(simulateSelector)
+    } else {
+      elementToSimulate = element
+    }
+
+    switch (simulate) {
+      case 'hover': {
+        await elementToSimulate.hover()
+        await elementToSimulate.dispose()
+        break
+      }
+
+      case 'click': {
+        await elementToSimulate.click()
+        break
+      }
+
+      case 'focusclick': {
+        await elementToSimulate.focus()
+        await elementToSimulate.click()
+        break
+      }
+
+      case 'active': {
+        // make a delayed click, no await. Else we get only a release state
+        waitBeforeFinish = 500 // have mouse pressed until screen shot is taken
+        elementToSimulate.click({
+          delay: waitBeforeFinish // move the mouse
+        })
+        break
+      }
+
+      case 'focus': {
+        await screenshotElement.press('Tab') // to simulate pressing tab key before focus
+        await elementToSimulate.focus()
+        break
+      }
+
+      default:
+    }
+  }
+
+  // wait before taking screenshot
+  if (waitAfterSimulateSelector) {
+    await page.waitForSelector(waitAfterSimulateSelector, {
+      visible: true
+    })
+  }
+  if (parseFloat(waitAfterSimulate) > 0) {
+    await page.waitFor(waitAfterSimulate)
+  }
+
+  if (secreenshotSelector) {
+    await page.waitForSelector(secreenshotSelector, { visible: true })
+    screenshotElement = await page.$(secreenshotSelector)
+  }
+
+  // with this, we get a warning (console)
+  // if an element is not in the pixel grid
+  if (!measureElement) {
+    measureElement = secreenshotSelector || selector
+  }
+  if (!isCI && measureElement) {
+    const pixelGrid = config.pixelGrid
+    if (selector !== measureElement) {
+      await page.waitForSelector(measureElement)
+    }
+    const heightInPixels = await page.evaluate(
+      ({ measureElement }) => {
+        const node = document.querySelector(measureElement)
+        return window.getComputedStyle(node).getPropertyValue('height')
+      },
+      {
+        measureElement
+      }
+    )
+    const heightInPixelsFloat = parseFloat(heightInPixels)
+    const isInEightSeries = (num) => num % pixelGrid
+    const howManyPixeToNextEight = (num) => {
+      const v = isInEightSeries(num)
+      return v === 0 ? v : pixelGrid - v
+    }
+    const off = howManyPixeToNextEight(heightInPixelsFloat)
+    if (off > 0) {
+      const inRem = Math.round(heightInPixelsFloat / (pixelGrid * 2))
+      log.warn(
+        `"${measureElement}" is <${off}px off to ${
+          heightInPixelsFloat + off
+        }rem (${heightInPixels}) which corresponds to a rem value of ${inRem}rem.`
+      )
+    }
+  }
+
+  const screenshot = await screenshotElement.screenshot()
+  screenshotElement = null
+
+  if (elementToSimulate) {
+    await elementToSimulate.dispose()
+    elementToSimulate = null
+  }
+
+  if (config.headless !== true) {
+    await page.waitFor(10e3)
+  }
+
+  // before we had: just to make sure we dont resolve, before the delayed click happened
+  // so the next interation on the same url will have a reset state
+  if (waitBeforeFinish > 0) {
+    await page.waitFor(waitBeforeFinish)
+  }
+
+  return screenshot
 }
 
 const setupPageScreenshot = ({
@@ -413,8 +405,6 @@ const createUrl = (url, fullscreen = false) => {
     /\/\//g,
     '/'
   )
-
-  // console.log('data-visual-test:', path)
 
   return path
 }

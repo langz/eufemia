@@ -27,6 +27,7 @@ if (global.IS_TEST) {
       background: #fff;
     }
 
+    .dnb-tabbar,
     .sticky-menu,
     .dnb-live-editor,
     #portal-sidebar-menu {

@@ -164,8 +164,8 @@ class LiveCode extends React.PureComponent {
       !window.IS_TEST
     ) {
       code = code.replace(/\s+data-visual-test="[^"]*"/g, '') // remove test data
-      // code = code.replace(/^\s*$(?:\r\n?|\n)/gm, '') // remove empty lines
     }
+    // code = code.replace(/^\s*$(?:\r\n?|\n)/gm, '') // remove empty lines
     return code
   }
 
