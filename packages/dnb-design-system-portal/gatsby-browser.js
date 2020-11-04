@@ -20,6 +20,8 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 function loadDevStyles() {
+  require('dnb-ui-lib/src/core/jest/jestSetupScreenshots.css') // import visual test styles
+
   // Only for testing legacy CSS code
   // require('dnb-ui-lib/stories/legacy')
 

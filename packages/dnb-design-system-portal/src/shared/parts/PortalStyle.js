@@ -8,43 +8,6 @@ import { gridStyle } from 'dnb-ui-lib/stories/GridStyle'
 
 export { gridStyle }
 
-// Screenshot Tests Setup
-let testWrapperStyle = ''
-if (global.IS_TEST || (typeof window !== 'undefined' && window.IS_TEST)) {
-  testWrapperStyle = css`
-    [data-visual-test-wrapper] {
-      position: relative;
-      z-index: 9999;
-
-      /* to get smaller width to the right (no white space) */
-      display: inline-block;
-
-      /* to get a space around the element,
-      so we can include a box-shadow in the screenshot */
-      padding: 1rem;
-      margin: -1rem;
-
-      background: #fff;
-    }
-
-    .dnb-tabbar,
-    .sticky-menu,
-    .dnb-live-editor,
-    #portal-sidebar-menu {
-      display: none !important;
-      padding: 0 !important;
-    }
-    .dnb-app-content {
-      margin-left: 0 !important;
-    }
-
-    /* stop scrolling */
-    html {
-      scroll-behavior: auto !important;
-    }
-  `
-}
-
 export default css`
   ${'' /* .dnb-form-component {
     @media screen and (max-width: 40em) {
@@ -294,7 +257,4 @@ export default css`
   .lh-32 {
     line-height: calc(var(--line-height-basis) + 1rem); /* 2rem */
   }
-
-  /* Do not delete, this is used for screenshot testing */
-  ${testWrapperStyle};
 `
