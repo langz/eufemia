@@ -55,22 +55,30 @@ function loadProdStyles() {
   }
 }
 
-if (
-  typeof window !== 'undefined' &&
-  window.location &&
-  window.location.href.includes('data-visual-test')
-) {
-  global.IS_TEST = true
-  if (typeof window !== 'undefined') {
+function setIsTest(location) {
+  if (location && location.href.includes('data-visual-test')) {
+    global.IS_TEST = true
     window.IS_TEST = true
   }
 }
+if (typeof window !== 'undefined') {
+  setIsTest(window.location)
+}
 export const onPreRouteUpdate = ({ location }) => {
-  if (location && location.href.includes('data-visual-test')) {
-    global.IS_TEST = true
-    if (typeof window !== 'undefined') {
-      window.IS_TEST = true
-    }
+  setIsTest(location)
+
+  // Because if visual test interruption, we disable the workbox / caching during the tests
+  if (window.IS_TEST && 'serviceWorker' in navigator) {
+    navigator.serviceWorker
+      .getRegistrations()
+      .then((registrations) => {
+        for (let registration of registrations) {
+          registration.unregister()
+        }
+      })
+      .catch((err) => {
+        console.error('Service Worker registration failed:', err)
+      })
   }
 }
 

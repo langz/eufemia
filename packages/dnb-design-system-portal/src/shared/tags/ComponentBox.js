@@ -23,7 +23,7 @@ const ComponentBox = ({ children, hideOnTest, scope = {}, ...rest }) => {
         ...getElements(),
         styled,
         React,
-        TestWrapper,
+        // TestWrapper,// Not used as of now
         ...scope
       }}
       {...rest}
@@ -49,14 +49,15 @@ ComponentBox.defaultProps = {
 
 export default ComponentBox
 
-export const TestWrapper = ({ children, ...props }) => {
-  document.documentElement.setAttribute('data-visual-test', true)
-  return (
-    <div data-visual-test-wrapper {...props}>
-      {children}
-    </div>
-  )
-}
-TestWrapper.propTypes = {
-  children: PropTypes.node.isRequired
-}
+// Not used as of now
+// export const TestWrapper = ({ children, ...props }) => {
+//   document.documentElement.setAttribute('data-visual-test', true)
+//   return (
+//     <div data-visual-test-wrapper {...props}>
+//       {children}
+//     </div>
+//   )
+// }
+// TestWrapper.propTypes = {
+//   children: PropTypes.node.isRequired
+// }

@@ -19,42 +19,49 @@ describe('HelperClasses screenshot', () => {
   })
   it('have to match core-style', async () => {
     const screenshot = await testPageScreenshot({
+      addWrapper: false,
       selector: '[data-visual-test="helper-core-style"]'
     })
     expect(screenshot).toMatchImageSnapshot()
   })
   it('have to match tap-focus', async () => {
     const screenshot = await testPageScreenshot({
+      addWrapper: false,
       selector: '[data-visual-test="helper-tap-focus"]'
     })
     expect(screenshot).toMatchImageSnapshot()
   })
   it('have to match unstyled-list', async () => {
     const screenshot = await testPageScreenshot({
+      addWrapper: false,
       selector: '[data-visual-test="helper-unstyled-list"]'
     })
     expect(screenshot).toMatchImageSnapshot()
   })
   it('have to match hide-on-mobile', async () => {
     const screenshot = await testPageScreenshot({
+      addWrapper: false,
       selector: '[data-visual-test="helper-hide-on-mobile"]'
     })
     expect(screenshot).toMatchImageSnapshot()
   })
   it('have to match mobile-exclusive', async () => {
     const screenshot = await testPageScreenshot({
+      // addWrapper: false,
       selector: '[data-visual-test="helper-mobile-exclusive"]'
     })
     expect(screenshot).toMatchImageSnapshot()
   })
   it('have to match width-limit', async () => {
     const screenshot = await testPageScreenshot({
+      addWrapper: false,
       selector: '[data-visual-test="helper-width-limit"]'
     })
     expect(screenshot).toMatchImageSnapshot()
   })
   it('have to match belt', async () => {
     const screenshot = await testPageScreenshot({
+      addWrapper: false,
       selector: '[data-visual-test="helper-belt"]'
     })
     expect(screenshot).toMatchImageSnapshot()
@@ -62,6 +69,7 @@ describe('HelperClasses screenshot', () => {
   if (!isCI) {
     it('have to match nudge', async () => {
       const screenshot = await testPageScreenshot({
+        addWrapper: false,
         style: {
           width: '60rem'
         },
@@ -71,6 +79,7 @@ describe('HelperClasses screenshot', () => {
     })
     it('have to match nudge mobile', async () => {
       const screenshot = await testPageScreenshot({
+        addWrapper: false,
         style: {
           width: '20rem'
         },
@@ -81,12 +90,14 @@ describe('HelperClasses screenshot', () => {
   }
   it('have to match sr-only', async () => {
     const screenshot = await testPageScreenshot({
+      addWrapper: false,
       selector: '[data-visual-test="helper-sr-only"]'
     })
     expect(screenshot).toMatchImageSnapshot()
   })
   it('have to match not-sr-only', async () => {
     const screenshot = await testPageScreenshot({
+      addWrapper: false,
       selector: '[data-visual-test="helper-not-sr-only"]'
     })
     expect(screenshot).toMatchImageSnapshot()

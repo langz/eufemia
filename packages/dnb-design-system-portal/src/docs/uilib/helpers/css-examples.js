@@ -5,13 +5,13 @@
 
 import React from 'react'
 import styled from '@emotion/styled'
-import CodeBlock from 'Src/shared/tags/CodeBlock'
+import ComponentBox from 'Src/shared/tags/ComponentBox'
 
 class Example extends React.PureComponent {
   render() {
     return (
       <React.Fragment>
-        <CodeBlock
+        <ComponentBox
           reactLive
           hideCode
           caption="Reset CSS inside a wrapper by using `.dnb-core-style`"
@@ -28,8 +28,12 @@ class Example extends React.PureComponent {
 </div>
         `
           }
-        </CodeBlock>
-        <CodeBlock reactLive hideCode data-visual-test="helper-tap-focus">
+        </ComponentBox>
+        <ComponentBox
+          reactLive
+          hideCode
+          data-visual-test="helper-tap-focus"
+        >
           {
             /* @html */ `
 <details>
@@ -41,8 +45,8 @@ class Example extends React.PureComponent {
 </details>
         `
           }
-        </CodeBlock>
-        <CodeBlock
+        </ComponentBox>
+        <ComponentBox
           reactLive
           hideCode
           caption="I'm an unstyled list `.dnb-unstyled-list`"
@@ -60,8 +64,8 @@ class Example extends React.PureComponent {
 </ul>
           `
           }
-        </CodeBlock>
-        <CodeBlock
+        </ComponentBox>
+        <ComponentBox
           reactLive
           hideCode
           caption="I'm not visible on small screens `.dnb-hide-on-mobile`"
@@ -74,8 +78,8 @@ class Example extends React.PureComponent {
 </div>
           `
           }
-        </CodeBlock>
-        <CodeBlock
+        </ComponentBox>
+        <ComponentBox
           reactLive
           hideCode
           caption="I'm ONLY visible on small screens"
@@ -88,8 +92,8 @@ class Example extends React.PureComponent {
 </div>
           `
           }
-        </CodeBlock>
-        <CodeBlock
+        </ComponentBox>
+        <ComponentBox
           reactLive
           hideCode
           caption="I'm inside a `.dnb-width-limit` wrapper"
@@ -102,8 +106,8 @@ class Example extends React.PureComponent {
 </div>
           `
           }
-        </CodeBlock>
-        <CodeBlock
+        </ComponentBox>
+        <ComponentBox
           reactLive
           hideCode
           caption="I'm inside a `.dnb-belt`"
@@ -114,8 +118,8 @@ class Example extends React.PureComponent {
 <div className="dnb-belt">I'm inside a .dnb-belt</div>
           `
           }
-        </CodeBlock>
-        <CodeBlock
+        </ComponentBox>
+        <ComponentBox
           reactLive
           hideCode
           caption="I'm a nudge"
@@ -134,8 +138,8 @@ I'm a vertical nudge. I have four nudges, which means I am 4rem units tall.
 </div>
           `
           }
-        </CodeBlock>
-        <CodeBlock
+        </ComponentBox>
+        <ComponentBox
           reactLive
           hideCode
           caption="I am only visible to screen readers `.dnb-sr-only`"
@@ -152,8 +156,8 @@ I'm a vertical nudge. I have four nudges, which means I am 4rem units tall.
 </p>
           `
           }
-        </CodeBlock>
-        <CodeBlock
+        </ComponentBox>
+        <ComponentBox
           reactLive
           hideCode
           caption="`.dnb-not-sr-only` I'm the opposite of .dnb-sr-only"
@@ -167,7 +171,7 @@ I'm a vertical nudge. I have four nudges, which means I am 4rem units tall.
 </p>
           `
           }
-        </CodeBlock>
+        </ComponentBox>
       </React.Fragment>
     )
   }

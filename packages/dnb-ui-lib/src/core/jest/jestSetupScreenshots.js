@@ -80,8 +80,12 @@ module.exports.testPageScreenshot = async ({
     })
   }
 
+  // Keep in mind, we also import this file in dev/prod portal (gatsby-browser),
+  // just because it makes local dev easier
+  await page.addStyleTag({
+    path: path.resolve(__dirname, './jestSetupScreenshots.css')
+  })
   await page.waitForSelector(selector)
-
   await page.mouse.move(0, 0)
 
   if (style) {
@@ -145,24 +149,17 @@ module.exports.testPageScreenshot = async ({
     await page.$eval(
       selector,
       (node, { id, style }) => {
-        if (node.getAttribute('data-visual-test-id')) {
-          node.style = style
-          node = node.parentNode
+        const attrValue = node.getAttribute('data-visual-test')
 
-          return node
-        } else {
-          const attrValue = node.getAttribute('data-visual-test')
+        const elem = document.createElement('div')
+        elem.setAttribute('data-visual-test-id', id)
+        elem.setAttribute('data-visual-test-wrapper', attrValue)
 
-          const elem = document.createElement('div')
-          elem.setAttribute('data-visual-test-id', id)
-          elem.setAttribute('data-visual-test-wrapper', attrValue)
+        node.parentNode.appendChild(elem)
+        elem.appendChild(node)
+        elem.style = style
 
-          node.parentNode.appendChild(elem)
-          elem.appendChild(node)
-          elem.style = style
-
-          return elem
-        }
+        return node
       },
       {
         id: wrapperId,
@@ -175,10 +172,6 @@ module.exports.testPageScreenshot = async ({
       `[data-visual-test-id="${wrapperId}"]`
     )
   }
-
-  await page.addStyleTag({
-    path: path.resolve(__dirname, './jestSetupScreenshots.css')
-  })
 
   if (text) {
     await page.$eval(
@@ -298,11 +291,11 @@ module.exports.testPageScreenshot = async ({
   }
 
   if (config.headless !== true) {
-    await page.waitFor(10e3)
+    await page.waitFor(config.timeout)
   }
 
   // before we had: just to make sure we dont resolve, before the delayed click happened
-  // so the next interation on the same url will have a reset state
+  // so the next integration on the same url will have a reset state
   if (waitBeforeFinish > 0) {
     await page.waitFor(waitBeforeFinish)
   }
@@ -387,12 +380,12 @@ const setupBeforeAll = async ({
 
   // just to make sure we get the latest version
   // Try the new Gatsby setup without this hack
-  if (isCI) {
-    await page.reload({
-      waitUntil: 'load' // the whole document (HTML) has been loaded.
-    })
-    await page.waitFor(1e3)
-  }
+  // if (isCI) {
+  // await page.reload({
+  //   waitUntil: 'domcontentloaded' // the whole document (HTML) has been loaded.
+  // })
+  //   await page.waitFor(1e3)
+  // }
 
   return page
 }
