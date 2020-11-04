@@ -80,6 +80,13 @@ module.exports.testPageScreenshot = async ({
     })
   }
 
+  if (isCI) {
+    await page.reload({
+      waitUntil: 'domcontentloaded' // the whole document (HTML) has been loaded.
+    })
+    // await page.waitFor(1e3)
+  }
+
   // Keep in mind, we also import this file in dev/prod portal (gatsby-browser),
   // just because it makes local dev easier
   await page.addStyleTag({
