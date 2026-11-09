@@ -1,0 +1,98 @@
+# For most projects, this workflow file will not need changing; you simply need
+# to commit it to your repository.
+#
+# You may wish to alter this file to override the set of languages analyzed,
+# or to provide custom queries or build logic.
+#
+# ******** NOTE ********
+# We have attempted to detect the languages in your repository. Please check
+# the `language` matrix defined below to confirm you have the correct set of
+# supported CodeQL languages.
+#
+name: CodeQL Analysis
+
+on:
+  push:
+    branches:
+      - '**'
+      - '!**--skip-ci'
+      - '!**--visual-reports'
+      - '!wip/**'
+      - '!experiments/**'
+      - '!dependabot/**'
+      - '!release'
+      - '!beta'
+      - '!alpha'
+  # Every pull request is analysed once, when it is opened. A pull request from
+  # a fork, or from a `dependabot/**` branch, has no push run here (the push
+  # trigger skips `dependabot/**`), so it is analysed on every update. Other
+  # pull request updates are skipped as before, now under another name: a
+  # skipped job counts as success, and must never stand in for the push check
+  # of the same name.
+  pull_request:
+    branches:
+      - 'dependabot/**'
+      - 'main'
+    types: [opened, synchronize, reopened]
+  schedule:
+    - cron: '44 3 * * 5'
+
+permissions:
+  contents: read
+  security-events: write
+
+concurrency:
+  # A run whose job is skipped gets a group of its own, so it cannot cancel an
+  # analysis that is in progress.
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}${{ !(github.event_name != 'pull_request' || github.event.action == 'opened' || github.event.pull_request.head.repo.full_name != github.repository || startsWith(github.head_ref, 'dependabot/')) && format('-{0}', github.run_id) || '' }}
+  # A canceled run reports a failed analysis to code scanning; let main runs finish.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  analyze:
+    # The name includes the matrix value itself, so the JavaScript job keeps
+    # exactly the required check name `Run analysis (javascript)`.
+    # `Run analysis (actions)` is not a required check.
+    name: ${{ (github.event_name != 'pull_request' || github.event.action == 'opened' || github.event.pull_request.head.repo.full_name != github.repository || startsWith(github.head_ref, 'dependabot/')) && format('Run analysis ({0})', matrix.language) || 'Run analysis (fork and Dependabot pull requests only)' }}
+    if: github.event_name != 'pull_request' || github.event.action == 'opened' || github.event.pull_request.head.repo.full_name != github.repository || startsWith(github.head_ref, 'dependabot/')
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # `actions` analyses the workflows and composite actions in `.github`.
+        language: ['javascript', 'actions']
+
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      # Initializes the CodeQL tools for scanning.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4
+        with:
+          languages: ${{ matrix.language }}
+          # Run the security-and-quality suite so CI also flags code-quality
+          # issues such as polynomial ReDoS, not only the default security queries.
+          queries: security-and-quality
+
+      # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
+      # If this step fails, then you should remove it and run the build manually (see below)
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4
+
+      # ℹ️ Command-line programs to run using the OS shell.
+      # 📚 https://git.io/JvXDl
+
+      # ✏️ If the Autobuild fails above, remove it and uncomment the following three lines
+      #    and modify them (or add more) to build your code if your project
+      #    uses a compiled language
+
+      #- run: |
+      #   make bootstrap
+      #   make release
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4
