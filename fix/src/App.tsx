@@ -1,7 +1,14 @@
 import { useState } from 'react'
 import { Card, Flex, P } from '@dnb/eufemia'
 import { Provider } from '@dnb/eufemia/shared'
-import { Field, Form, Iterate, Tools, Wizard } from '@dnb/eufemia/extensions/forms'
+import {
+  Field,
+  Form,
+  Iterate,
+  Tools,
+  Value,
+  Wizard,
+} from '@dnb/eufemia/extensions/forms'
 
 type Item = { name?: string }
 
@@ -15,10 +22,10 @@ function EditableItems() {
   return (
     <>
       <Iterate.Array path="/items">
-        <Iterate.ViewContainer title="Item">
-          <Iterate.ItemNo>Item {'{itemNo}'}</Iterate.ItemNo>
+        <Iterate.ViewContainer title="Item {itemNo}">
+          <Value.String label="Name" itemPath="/name" />
         </Iterate.ViewContainer>
-        <Iterate.EditContainer title="Item">
+        <Iterate.EditContainer title="Item {itemNo}">
           <Field.String label="Name" itemPath="/name" required />
           <Iterate.RemoveButton />
         </Iterate.EditContainer>
